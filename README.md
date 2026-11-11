@@ -65,13 +65,12 @@ L'accélération matérielle peut réduire la charge du serveur ; configurez-la 
 
 ## 3. Construire l'application
 
-Le dépôt contient les sources du client, mais **pas de paquet `.civapp` précompilé**, ni les adaptateurs natifs tiers. Voir les [mentions de dépendances et de redistribution](THIRD_PARTY.md).
+Le dépôt contient les sources du client et les **quatre fichiers Moonlight nécessaires**, conservés sans modification avec leur notice amont. Il ne contient pas de paquet `.civapp` précompilé. Voir les [mentions et crédits XITRIX / Gezine](THIRD_PARTY.md).
 
 ### Prérequis PC
 
 - Git.
 - Python **3.10 ou supérieur**, sans paquet Python externe.
-- Connexion Internet au premier build pour récupérer les dépendances épinglées.
 - Pour exécuter les tests : Node.js **22 ou supérieur** et FFmpeg accessibles dans le `PATH`.
 
 ```sh
@@ -82,13 +81,13 @@ python tools/build.py
 
 Sur certains systèmes, utilisez `python3` à la place de `python`.
 
-Le build télécharge et vérifie quatre fichiers Moonlight à une révision précise, génère le logo et le dérivé média, vérifie les sources et assemble :
+Le build vérifie les sources Moonlight et leur notice à une révision précise, génère le logo et le dérivé média, puis assemble :
 
 ```text
 dist/jellyfin-civswitch.civapp
 ```
 
-Aucun dépôt voisin, checkout Moonlight complet, compilateur C ou serveur Sunshine n'est nécessaire. Une fois les dépendances présentes et vérifiées, les builds suivants utilisent le cache local `.deps/`.
+Aucun dépôt voisin, téléchargement de dépendances, checkout Moonlight complet, compilateur C ou serveur Sunshine n'est nécessaire. Après le clonage et l'installation de Python, la construction fonctionne hors ligne.
 
 ## 4. Installer dans CivHomebrew
 
@@ -175,12 +174,15 @@ playback-options.js    Positions et sélection des sous-titres
 payload.json           Métadonnées et ordre des scripts .civapp
 tools/                 Build, packaging et vérification des dépendances
 tests/                 Tests hôte et médias synthétiques
+vendor/moonlight/      Quatre sources XITRIX/Gezine et notice amont, inchangées
 ```
 
 Les prototypes, sondes de jeu, anciennes investigations et dépendances complètes ne font pas partie du dépôt. Les sorties de build, caches et fichiers de paramètres locaux sont ignorés par Git.
 
 ## Crédits et statut
 
-Client développé par **THZoria / SaoriYuki**. Logo : contributeurs Jellyfin, **CC BY-SA 4.0**, voir [BRANDING.md](BRANDING.md). Adaptateurs natifs : **XITRIX/Moonlight-CivSwitch** et contributeurs ; voir [THIRD_PARTY.md](THIRD_PARTY.md), notamment les restrictions de redistribution.
+Client développé par **THZoria / SaoriYuki**. Un grand merci à **[XITRIX](https://github.com/XITRIX)** pour Moonlight-CivSwitch et à **[Gezine](https://github.com/Gezine)** pour CivSwitch et les fondations du portage : le lecteur natif repose sur leur travail et celui des contributeurs amont. Les quatre fichiers repris conservent leurs sources intactes et leur attribution.
+
+Logo : contributeurs Jellyfin, **CC BY-SA 4.0**, voir [BRANDING.md](BRANDING.md). Notices et portée des licences : [THIRD_PARTY.md](THIRD_PARTY.md) et [notice amont conservée](vendor/moonlight/app/civapp-notices.js).
 
 Projet indépendant, non affilié à Jellyfin, Nintendo ou aux éditeurs du jeu. Cette version ne gère pas le direct TV, le téléchargement hors ligne, la sélection audio, ni la reprise automatique d'un épisode depuis la position enregistrée par le serveur.

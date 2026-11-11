@@ -20,7 +20,9 @@
  * The upstream repository has no root project-wide LICENSE at this revision;
  * this notice does not grant additional redistribution rights. This integration
  * is a local experimental build; clarify licensing before public redistribution.
- * Source dependencies and this derivative are fetched/generated locally and
- * excluded from Git. See THIRD_PARTY.md for build and redistribution details.
+ * The four original source/test files and upstream app/civapp-notices.js are
+ * preserved in vendor/moonlight/. The supplied upstream notice lists third-party
+ * component licenses, not an explicit blanket license for the native adapters.
+ * See THIRD_PARTY.md for provenance, licensing scope and credits to XITRIX and Gezine.
  */
 window.JellyfinNativeProvenance={repository:"https://github.com/XITRIX/Moonlight-CivSwitch",commit:"64cdae7f4a3f19202c7f8eaa0e5ac12ce3330d72"};

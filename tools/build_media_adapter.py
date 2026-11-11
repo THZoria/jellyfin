@@ -1,11 +1,12 @@
 """Generate a minimal VOD pacing extension without modifying the Moonlight checkout."""
 import hashlib
 from pathlib import Path
+from dependencies import BASE, FILES
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / ".deps/moonlight/app/src/streaming/native-media.js"
+SOURCE = BASE / "app/src/streaming/native-media.js"
 OUTPUT = ROOT / "vendor/moonlight-native-media-vod.js"
-EXPECTED = "a95666afa3b88bb868dca23fce761bf8f366cdad3afab929db950656ccea7ce2"
+EXPECTED = FILES["app/src/streaming/native-media.js"]
 
 def transformed():
     if hashlib.sha256(SOURCE.read_bytes()).hexdigest() != EXPECTED:

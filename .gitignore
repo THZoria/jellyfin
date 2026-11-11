@@ -1,4 +1,4 @@
-# Third-party sources fetched at a pinned revision, not redistributed here.
+# Old dependency cache and generated derivative (sources live in vendor/moonlight).
 .deps/
 vendor/moonlight-native-media-vod.js
 

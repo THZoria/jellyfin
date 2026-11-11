@@ -4,7 +4,7 @@
  */
 "use strict";
 const fs=require("node:fs"),path=require("node:path");
-const base=path.join(__dirname,"../.deps/moonlight");
+const base=path.join(__dirname,"../vendor/moonlight");
 const upstream=path.resolve(base,"app/src/streaming/native-media.js");
 const derived=path.resolve(__dirname,"../vendor/moonlight-native-media-vod.js");
 const original=fs.readFileSync;

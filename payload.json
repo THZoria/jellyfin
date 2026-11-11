@@ -5,7 +5,7 @@
   "release": "0.0.1",
   "description": "Jellyfin pour Switch 2 par SaoriYuki. Catalogue, lecteur plein ecran et mise en tampon native. Logo Jellyfin : contributeurs Jellyfin, CC BY-SA 4.0.",
   "api": 1,
-  "scripts": ["third-party-notices.js", "brand.js", ".deps/moonlight/app/src/streaming/native-io.js", ".deps/moonlight/app/src/streaming/native-texture.js", "vendor/moonlight-native-media-vod.js", "http-stream.js", "matroska.js", "native-http.js", "vod-pacer.js", "native-player.js", "player-layout.js", "playback-options.js", "app.js"],
+  "scripts": ["third-party-notices.js", "brand.js", "vendor/moonlight/app/src/streaming/native-io.js", "vendor/moonlight/app/src/streaming/native-texture.js", "vendor/moonlight-native-media-vod.js", "http-stream.js", "matroska.js", "native-http.js", "vod-pacer.js", "native-player.js", "player-layout.js", "playback-options.js", "app.js"],
   "icon": "icon.png",
   "extensions": {"updates": null}
 }

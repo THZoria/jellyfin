@@ -1,3 +1,5 @@
 * text=auto eol=lf
 *.png binary
 *.mkv binary
+# Keep upstream source bytes intact for pinned SHA-256 verification.
+vendor/moonlight/** -text -whitespace

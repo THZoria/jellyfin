@@ -3,14 +3,14 @@ import hashlib
 import json
 from pathlib import Path
 from build_media_adapter import transformed, OUTPUT
-from fetch_dependencies import BASE, FILES
+from dependencies import BASE, FILES
 
 ROOT = Path(__file__).resolve().parents[1]
 
 def main():
     manifest = json.loads((ROOT / "payload.json").read_text(encoding="utf8"))
     for name in ("native-io.js", "native-texture.js"):
-        relative = ".deps/moonlight/app/src/streaming/" + name
+        relative = "vendor/moonlight/app/src/streaming/" + name
         if relative not in manifest["scripts"]:
             raise SystemExit("Native adapter missing from manifest: " + relative)
     if "vendor/moonlight-native-media-vod.js" not in manifest["scripts"] or OUTPUT.read_text(encoding="utf8") != transformed():
