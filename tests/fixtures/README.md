@@ -1,3 +1,3 @@
 # Native-player host fixtures
 
-Generated locally from FFmpeg lavfi test sources, not from game files or a Jellyfin account. `native-av.mkv` is H.264 baseline/Opus stereo at 48 kHz. It is used by host demux/transport/clock tests, not included as a console test screen or in the `.civapp`.
+Generated locally from FFmpeg lavfi test sources, not from game files or a Jellyfin account. Both `native-av.mkv` and `native-av-live.mkv` contain H.264 baseline video and 48 kHz stereo Opus audio. The latter uses non-seekable output to exercise unknown-size Matroska segments. They are used by host demuxing, transport, and clock tests and are not included in the `.civapp` or displayed as console test screens.

@@ -1,5 +1,5 @@
-# Contrats runtime CivHomebrew
+# CivHomebrew runtime contracts
 
-`http.js` et `dns.js` sont des copies inchangées des parseurs CivHomebrew utilisés par `CivHttp` et `CivDns` sur console. Ils permettent aux tests de frontière `native-http.cjs` de fonctionner sans dépôt voisin, avec les vrais parseurs et des sockets simulés.
+`http.js` and `dns.js` are unchanged copies of the CivHomebrew parsers used by `CivHttp` and `CivDns` on the console. They let the `native-http.cjs` boundary tests run without a neighboring repository, using the real parsers and simulated sockets.
 
-Ces deux fixtures ne sont pas incluses dans le `.civapp`. La console utilise les services de son runtime CivHomebrew. Les tests ne prouvent pas que tous les runtimes installés sont identiques à ces copies et ne valident pas le SDK ou le matériel.
+These two fixtures are not included in the `.civapp`. The console uses the services provided by its own CivHomebrew runtime. The tests do not establish that every installed runtime matches these copies, and they do not validate the SDK or hardware.

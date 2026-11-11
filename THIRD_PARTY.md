@@ -1,28 +1,28 @@
-# Composants et crédits
+# Third-party components and credits
 
 ## Moonlight-CivSwitch
 
-- Projet : https://github.com/XITRIX/Moonlight-CivSwitch
-- Révision : `64cdae7f4a3f19202c7f8eaa0e5ac12ce3330d72`
-- Crédits : **XITRIX** (Moonlight-CivSwitch), **Gezine** (CivSwitch et fondations du portage) et contributeurs amont. Leur code reste attribué à ses auteurs, pas à THZoria.
-- Fichiers requis : `native-io.js`, `native-texture.js`, `native-media.js` et `tests/test-media-queues.cjs`.
+- Project: https://github.com/XITRIX/Moonlight-CivSwitch
+- Revision: `64cdae7f4a3f19202c7f8eaa0e5ac12ce3330d72`
+- Credits: **XITRIX** (Moonlight-CivSwitch), **Gezine** (CivSwitch and the port's foundations), and upstream contributors. Their code remains attributed to its original authors, not THZoria.
+- Required files: `native-io.js`, `native-texture.js`, `native-media.js`, and `tests/test-media-queues.cjs`.
 
-Les quatre fichiers sources sont inclus **sans modification** dans `vendor/moonlight/`, avec leurs chemins amont. `tools/dependencies.py` épingle leur révision et leurs SHA-256 ; `tools/check_native_sources.py` les vérifie. Aucun téléchargement, checkout complet ou sous-module n'est nécessaire pour construire le projet. `tools/build_media_adapter.py` produit localement `vendor/moonlight-native-media-vod.js` avec trois points d'extension de timing VOD ; ce dérivé généré est ignoré par Git, mais toutes ses sources et son générateur sont fournis.
+The four source files are included **without modifications** under `vendor/moonlight/`, preserving their upstream paths. `tools/dependencies.py` pins their revision and SHA-256 hashes, which are checked by `tools/check_native_sources.py`. No download, full checkout, or submodule is needed to build the project. `tools/build_media_adapter.py` locally generates `vendor/moonlight-native-media-vod.js` with three VOD timing hooks. This generated derivative is ignored by Git, but its complete source and generator are included.
 
-La [notice amont indiquée par l'utilisateur](https://github.com/XITRIX/Moonlight-CivSwitch/blob/master/app/civapp-notices.js) est conservée intégralement dans [`vendor/moonlight/app/civapp-notices.js`](vendor/moonlight/app/civapp-notices.js), depuis la même révision épinglée. Son SHA-256 est également vérifié. Elle regroupe notamment les licences de Forge, Moonlight-Switch, Emscripten, ENet, mbedTLS et moonlight-common-c. Ces composants complets ne sont pas embarqués dans ce client.
+The [upstream notices](https://github.com/XITRIX/Moonlight-CivSwitch/blob/master/app/civapp-notices.js) are preserved in full in [`vendor/moonlight/app/civapp-notices.js`](vendor/moonlight/app/civapp-notices.js), from the same pinned revision. Their SHA-256 hash is also verified. They include licenses for Forge, Moonlight-Switch, Emscripten, ENet, mbedTLS, and moonlight-common-c. These complete components are not bundled with this client.
 
-**Portée des licences :** cette notice présente les licences des composants qu'elle nomme ; elle ne déclare pas explicitement une licence globale pour les quatre fichiers JavaScript repris ici. Leur inclusion dans ce dépôt privé à la demande de THZoria ne les relicencie pas et ne permet pas d'affirmer que la licence Forge ou une GPL s'applique automatiquement à tous les adaptateurs. Conserver les crédits et les notices ; confirmer la portée de l'autorisation auprès de XITRIX/Gezine avant une redistribution publique. Le paquet compilé reste une sortie de build locale, non publiée.
+**Licensing scope:** these notices describe the licenses of the components they name. They do not explicitly declare a project-wide license for the four reused JavaScript files. Including those files in this private repository at THZoria's request does not relicense them or establish that Forge's license or a GPL automatically applies to all adapters. Preserve credits and notices, and confirm the scope of permission with XITRIX/Gezine before public redistribution. The compiled package remains a local build output and is not published.
 
 ## Jellyfin
 
-Le logo appartient aux contributeurs Jellyfin et est sous **CC BY-SA 4.0**. Sa version PNG adaptée, son générateur et son attribution sont décrits dans [BRANDING.md](BRANDING.md). Le client est indépendant et n'est pas approuvé par Jellyfin.
+The logo belongs to the Jellyfin contributors and is licensed under **CC BY-SA 4.0**. Its adapted PNG version, generator, and attribution are documented in [BRANDING.md](BRANDING.md). This client is independent and is not endorsed by Jellyfin.
 
 ## CivHomebrew
 
-`tools/package_payload.py` provient de l'outil autonome de packaging CivHomebrew présent dans le projet de développement de THZoria. Il est conservé autonome et inchangé afin de préserver le format `.civapp` v1. Deux copies des parseurs HTTP/DNS sont conservées dans `tests/runtime/` exclusivement pour les tests hôte ; elles ne sont pas incluses dans l'application. Le clavier, le stockage, le pont SDK et les services runtime utilisés sur la console sont fournis par CivHomebrew.
+`tools/package_payload.py` comes from the standalone CivHomebrew packaging tool in THZoria's development project. It is kept standalone and unchanged to preserve the `.civapp` v1 format. Copies of the HTTP and DNS parsers are retained in `tests/runtime/` exclusively for host tests and are not bundled with the application. The keyboard, storage, SDK bridge, and runtime services used on the console are provided by CivHomebrew.
 
-## Fichiers de test
+## Test fixtures
 
-Les deux fichiers Matroska de `tests/fixtures/` sont des mires synthétiques FFmpeg, sans contenu de films, données de compte ou fichiers du jeu. Ils servent uniquement aux tests PC et ne sont pas inclus dans l'application.
+The two Matroska files in `tests/fixtures/` are synthetic FFmpeg test patterns. They contain no movie content, account data, or game files. They are used only for PC tests and are not included in the application.
 
-Le code original du client est crédité à **THZoria / SaoriYuki**. Aucune licence globale supplémentaire n'est appliquée ici aux composants tiers.
+The original client code is credited to **THZoria / SaoriYuki**. No additional project-wide license is applied here to third-party components.
