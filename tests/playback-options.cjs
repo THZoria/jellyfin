@@ -1,0 +1,12 @@
+"use strict";
+const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("node:path"),vm=require("node:vm");
+const context={};context.window=context;vm.runInNewContext(fs.readFileSync(path.join(__dirname,"../playback-options.js"),"utf8"),context);
+const o=context.JellyfinPlaybackOptions,plain=v=>JSON.parse(JSON.stringify(v));
+assert.equal(o.duration({RunTimeTicks:1200000000}),120);assert.equal(o.duration({},{}),null);assert.equal(o.duration({RunTimeTicks:1200000000},{RunTimeTicks:600000000}),60);
+assert.equal(o.clamp(-10,60),0);assert.equal(o.clamp(90,60),59);assert.equal(o.clamp(90,null),90);assert.equal(o.clamp(Infinity,60),0);
+assert.equal(o.time(0),"0:00");assert.equal(o.time(72),"1:12");assert.equal(o.time(3672),"1:01:12");
+const tracks=o.subtitles({MediaStreams:[{Type:"Video",Index:0},{Type:"Audio",Index:1},{Type:"Subtitle",Index:4,DisplayTitle:"Francais ASS"},{Type:"Subtitle",Index:9,Language:"eng",Codec:"pgssub",IsForced:true},{Type:"Subtitle",Index:-2}]});
+assert.deepEqual(plain(tracks),[{index:4,label:"Francais ASS"},{index:9,label:"eng · pgssub · Force"}]);
+assert.deepEqual(plain(o.streamOptions(22.5,9)),{StartTimeTicks:225000000,SubtitleStreamIndex:9,SubtitleMethod:"Encode"});
+assert.deepEqual(plain(o.streamOptions(0,null)),{StartTimeTicks:0,SubtitleStreamIndex:-1,SubtitleMethod:"Drop"});
+console.log("PASS: absolute seek timeline, duration bounds, time display, actual subtitle stream indices and Jellyfin burn-in/off parameters.");

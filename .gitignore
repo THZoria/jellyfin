@@ -1,0 +1,17 @@
+# Third-party sources fetched at a pinned revision, not redistributed here.
+.deps/
+vendor/moonlight-native-media-vod.js
+
+# Build products and local settings/secrets.
+dist/
+__pycache__/
+*.py[cod]
+node_modules/
+.env
+.env.*
+*settings.json
+*.log
+
+# Historical local investigations must not enter the public source tree.
+research/
+investigation/
