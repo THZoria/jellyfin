@@ -17,7 +17,7 @@ Le logo appartient aux contributeurs Jellyfin et est sous **CC BY-SA 4.0**. Sa v
 
 ## CivHomebrew
 
-`tools/package_payload.py` provient de l'outil autonome de packaging CivHomebrew présent dans le projet de développement de THZoria. Il est conservé autonome et inchangé afin de préserver le format `.civapp` v1. Le runtime, le clavier, le stockage et le pont SDK sont fournis par CivHomebrew sur la console et ne font pas partie de ce dépôt.
+`tools/package_payload.py` provient de l'outil autonome de packaging CivHomebrew présent dans le projet de développement de THZoria. Il est conservé autonome et inchangé afin de préserver le format `.civapp` v1. Deux copies des parseurs HTTP/DNS sont conservées dans `tests/runtime/` exclusivement pour les tests hôte ; elles ne sont pas incluses dans l'application. Le clavier, le stockage, le pont SDK et les services runtime utilisés sur la console sont fournis par CivHomebrew.
 
 ## Fichiers de test
 

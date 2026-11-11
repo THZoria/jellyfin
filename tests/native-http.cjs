@@ -6,7 +6,7 @@ const vm = require("node:vm");
 const assert = require("node:assert/strict");
 const context = {setTimeout:(fn) => setImmediate(fn)};
 context.window = context;
-for (const file of ["../../CivHomebrew/app/src/http.js", "../../CivHomebrew/app/src/dns.js", "../http-stream.js", "../native-http.js"]) {
+for (const file of ["runtime/http.js", "runtime/dns.js", "../http-stream.js", "../native-http.js"]) {
     vm.runInNewContext(fs.readFileSync(path.join(__dirname,file),"utf8"),context);
 }
 function mock(response, options = {}) {
