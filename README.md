@@ -4,14 +4,7 @@
 
 Browse your Jellyfin libraries and watch videos in fullscreen with controller support. Your server transcodes the media, while the console uses the native player to decode H.264 video and Opus audio.
 
-> This project requires an **already working CivHomebrew environment**. It is not available through the Nintendo eShop and does not include any game, system files, or instructions for setting up the console environment.
-
-### 0.0.2 compatibility update
-
-- Aligned with CivHomebrew revision `e6627ce1` and its **SDK 1.3.6** native UI runtime; requires a Launcher/core providing **SDK 1.3.5 or newer**. Update CivHomebrew through its normal component mechanism and fully restart Civilization VII before installing this client.
-- Declares native UI API 1 and ordered execution, mounts a shared native view, and releases it when returning to Launcher. Merely adding a manifest flag would not make the old client compatible.
-- Uses Moonlight's shared Vulkan/NV12 video path instead of the old Gameface texture path. The obsolete `GPU sync pointer range rejected` code is no longer invoked by Jellyfin; no memory validation is disabled and no firmware addresses are guessed.
-- Bundles the current native keyboard with exact confirmed-text replacement. Username/password characters are not trimmed or URL/form-encoded. Host tests cover a **20-character username**, a **16-character password**, `@ . * # %`, Unicode, and configured length limits (512/256).
+> This project requires an **already working CivHomebrew environment with SDK 1.3.5 or newer**. It is not available through the Nintendo eShop and does not include any game, system files, or instructions for setting up the console environment.
 
 **Switch 2 firmware 20.1.1 still requires a device test.** These changes and the successful PC tests do not establish that playback or native keyboard entry works on that firmware. No console installation or firmware change is performed by the build.
 
@@ -99,6 +92,8 @@ dist/jellyfin-civswitch.civapp
 No neighboring repository, dependency download, full Moonlight checkout, C compiler, or Sunshine server is required. Once you have cloned the repository and installed Python, the build works offline.
 
 ## 4. Install in CivHomebrew
+
+**Minimum requirement: CivHomebrew with SDK 1.3.5 or newer.** If necessary, update CivHomebrew through its normal component mechanism, then fully restart Civilization VII before installing and launching Jellyfin.
 
 1. Open CivHomebrew on the console and enable its FTP server.
 2. From an FTP client on your PC, connect to the address shown by CivHomebrew. The default port is **5000**.
