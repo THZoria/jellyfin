@@ -63,10 +63,11 @@
         Object.assign(nativeImage.style,{left:box.left+"px",top:box.top+"px",width:box.width+"px",height:box.height+"px"});
     }
     function enterFullscreen() {
-        fullscreenState = {padding:root.style.padding,background:root.style.backgroundColor,displays:chrome.map(function(n){return n.style.display||"";})};
+        fullscreenState = {padding:root.style.padding,background:root.style.backgroundColor,backgroundImage:root.style.backgroundImage,displays:chrome.map(function(n){return n.style.display||"";})};
         chrome.forEach(function(n){n.style.display="none";});root.style.padding="0";root.style.backgroundColor="#000";
         fullscreenLayer = node("div",root,{position:"fixed",left:"0",top:"0",right:"0",bottom:"0",backgroundColor:"#000",overflow:"hidden",zIndex:"10"});
         fullscreenLayer.id = "jellyfin-fullscreen-player";
+        if(nativeView){root.style.backgroundColor="transparent";root.style.backgroundImage="none";fullscreenLayer.style.backgroundColor="transparent";}
         fullscreenLayer.setAttribute("role","region");fullscreenLayer.setAttribute("aria-label","Lecteur video plein ecran");
         return fullscreenLayer;
     }
@@ -77,7 +78,7 @@
         fullscreenLayer = null;fullscreenNotice = null;
         if (fullscreenState) {
             chrome.forEach(function(n,i){n.style.display=fullscreenState.displays[i];});
-            root.style.padding=fullscreenState.padding;root.style.backgroundColor=fullscreenState.background;fullscreenState=null;
+            root.style.padding=fullscreenState.padding;root.style.backgroundColor=fullscreenState.background;root.style.backgroundImage=fullscreenState.backgroundImage;fullscreenState=null;
         }
     }
     function toggleNativePause() {
@@ -462,8 +463,8 @@
                 onStatus:function(text){if (!closed && nativePlayer === controller) message(text);},
                 onImage:function(url){
                     if (closed || nativePlayer !== controller) return;
-                    if (image.src !== url) image.src = url;
-                    image.style.display = "block";
+                    // Shared Vulkan presentation has no Gameface texture URL.
+                    if(url){if (image.src !== url) image.src = url;image.style.display = "block";}
                     if (!session.started) {
                         if (fullscreenNotice) fullscreenNotice.style.display=current.paused?"block":"none";
                         session.started = true; message("Lecture native H.264/Opus. A : pause/reprise ; B : retour.");

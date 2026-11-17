@@ -14,7 +14,8 @@ class Element{
  focus(){}
 }
 const all=n=>[n,...n.children.flatMap(all)],tick=()=>new Promise(r=>setImmediate(r));
-async function run(){
+async function run(shared=false){
+ let nativeMounts=0,nativeCloses=0;
  const body=new Element("body"),events={},answers=[],requests=[],players=[];
    let offset=0,failViews=false,failAuth=false,failWrite=false,allowTranscode=true,pending=false,pendingPlayback=false,cancelled=false,cleared=0,nativeAction=null,saved=null,commits=0,validServer=true;
  function response(url,method,headers,data){
@@ -45,30 +46,34 @@ async function run(){
    players.push(p);queueMicrotask(()=>{o.onFormat({width:1280,height:720,displayWidth:1280,displayHeight:720});o.onImage("live:/moonlight-experiment/test");});return p;
   }}
  };
+   if(shared){context.CivNanoVGSession={};context.CivHomebrewSDK={app:{mount:async root=>{nativeMounts++;assert.equal(root.attrs["data-civ-native-ui"],"1");return {update(){},async close(){await tick();nativeCloses++;}};}}};}
    context.window=context;for(const file of ["brand.js","player-layout.js","playback-options.js"])vm.runInNewContext(fs.readFileSync(path.join(__dirname,"..",file),"utf8"),context);const lifetime=vm.runInNewContext(source,context);await tick();
  const text=()=>all(body).map(n=>n.textContent).join("\n"),buttons=()=>all(body).filter(n=>n.tag==="button");
  async function key(key){offset+=200;events.keydown({key,repeat:false,preventDefault(){},stopImmediatePropagation(){}});await tick();}
  async function native(name,phase=0){offset+=200;nativeAction(name,phase,0,0);await tick();}
  async function click(prefix){const n=buttons().find(n=>n.attrs["aria-label"].startsWith(prefix));assert.ok(n,"Button: "+prefix);for(let i=0;n.style.display==="none"&&i<buttons().length;i++)await key("ArrowDown");assert.notEqual(n.style.display,"none");n.events.click();await tick();}
-  assert.match(text(),/0.0.1.*SaoriYuki/);
+   assert.match(text(),/0.0.2.*SaoriYuki/);
  assert.ok(!text().includes("Sonde ExeFS")&&!text().includes("Test WebM"),"Old diagnostic branches removed from UI");
   assert.ok(!buttons().some(n=>n.attrs["aria-label"].startsWith("Utilisateur")),"Login gated before server acceptance");
   assert.equal(requests.length,0,"No default server contacted");
   await click("Continuer");assert.equal(requests.length,0);assert.equal(saved,null);
   answers.push("http://test.invalid:8096");await click("Adresse du serveur");validServer=false;await click("Continuer");assert.equal(saved,null);assert.ok(!text().includes("Nom du compte"));
   validServer=true;await click("Continuer");assert.equal(JSON.parse(saved).server,"http://test.invalid:8096");assert.equal(commits,1);
-  answers.push("alice");await click("Utilisateur");answers.push("SECRET-PASSWORD");await click("Mot de passe");assert.ok(!text().includes("SECRET-PASSWORD"));
+   const username="alic.z@jellyfin.test",password="Ab@*#%123456789!";
+   assert.equal(username.length,20);assert.equal(password.length,16);
+   answers.push(username);await click("Utilisateur");answers.push(password);await click("Mot de passe");assert.ok(!text().includes(password));
   assert.ok(buttons().find(n=>n.attrs["data-selected"]==="true").attrs["aria-label"].startsWith("Mot de passe"),"Keyboard completion preserves the edited field");
   answers.push(null);nativeAction("accept",0,0,0);await tick();assert.equal(answers.length,0,"The next A activates immediately after keyboard completion");
  failViews=true;await click("Se connecter");assert.match(text(),/Connecte - catalogue indisponible/);failViews=false;await click("Reessayer le catalogue");
- assert.equal(JSON.parse(requests.find(r=>r.url.endsWith("AuthenticateByName")).data).Pw,"SECRET-PASSWORD");
+  assert.deepEqual(JSON.parse(requests.find(r=>r.url.endsWith("AuthenticateByName")).data),{Username:username,Pw:password});
   assert.deepEqual(Object.keys(JSON.parse(saved)),["server"],"Never persist account or credentials");
   await click("Series");assert.match(text(),/Page 1 \/ 3/);await key("ArrowRight");assert.match(text(),/Page 2 \/ 3/);await click("Page suivante");assert.match(text(),/Page 3 \/ 3/);
  assert.ok(!buttons().some(n=>n.attrs["aria-label"].startsWith("Page suivante")));await key("ArrowLeft");await key("ArrowLeft");
  for(let i=0;i<12;i++)await key("ArrowDown");const selected=buttons().find(n=>n.attrs["data-selected"]==="true");assert.equal(selected.attrs["aria-label"],"Anime 12");assert.notEqual(selected.style.display,"none");
   await key("Enter");await click("Lire");assert.equal(players.length,1);assert.ok(all(body).some(n=>n.tag==="img"&&n.src==="live:/moonlight-experiment/test"));assert.ok(!text().includes("TEST-TOKEN"));
  const overlay=all(body).find(n=>n.id==="jellyfin-fullscreen-player"),image=overlay.children.find(n=>n.tag==="img");
- assert.equal(overlay.style.position,"fixed");assert.equal(overlay.style.left,"0");assert.equal(overlay.style.right,"0");assert.equal(overlay.style.top,"0");assert.equal(overlay.style.bottom,"0");
+  assert.equal(overlay.style.position,"fixed");assert.equal(overlay.style.left,"0");assert.equal(overlay.style.right,"0");assert.equal(overlay.style.top,"0");assert.equal(overlay.style.bottom,"0");
+  if(shared){assert.equal(overlay.style.backgroundColor,"transparent");assert.equal(body.children[0].style.backgroundColor,"transparent");assert.equal(body.children[0].style.backgroundImage,"none");}
  assert.equal(buttons().length,0,"No Jellyfin menu or player buttons during playback");
  assert.ok(body.children[0].children.filter(n=>n!==overlay).every(n=>n.style.display==="none"),"All application chrome is hidden");
  assert.equal(image.style.width,"1920px");assert.equal(image.style.height,"1080px");assert.equal(image.style.left,"0px");assert.equal(image.style.top,"0px");
@@ -122,6 +127,7 @@ async function run(){
   saved=remembered;const different=vm.runInNewContext(source,context);await tick();await tick();await click("Changer de serveur");answers.push("http://other.invalid:8096");await click("Adresse du serveur");await click("Continuer");assert.ok(text().includes("Nom du compte"));assert.equal(checkbox().attrs["aria-checked"],"false");assert.deepEqual(JSON.parse(saved),{server:"http://other.invalid:8096"},"Credentials never migrate to a different server");await context.__civswitchApp.close();await different;
   pending=true;const third=vm.runInNewContext(source,context);await tick();await context.__civswitchApp.close();await third;assert.ok(cancelled,"Saved server revalidation cancelled cleanly on close");
   pending=false;saved="{corrupt";const before=requests.length,fourth=vm.runInNewContext(source,context);await tick();assert.equal(requests.length,before);assert.ok(text().includes("Ajouter une adresse"));assert.ok(!text().includes("Nom du compte"));await context.__civswitchApp.close();await fourth;
-  console.log("PASS: server/login persistence, fullscreen A/B, coalesced forward/back seek, ASS/PGS selection/off, absolute position reports, pause preservation, stale callback rejection, cancellation and teardown (host mocks).");
+   if(shared)assert.equal(nativeMounts,nativeCloses,"Every shared view lease closes before app lifetime resolves");
+   console.log("PASS: server/login persistence, fullscreen A/B, coalesced forward/back seek, ASS/PGS selection/off, absolute position reports, pause preservation, stale callback rejection, cancellation and teardown (host mocks, shared="+shared+").");
 }
-run().catch(e=>{console.error(e);process.exitCode=1;});
+run().then(()=>run(true)).catch(e=>{console.error(e);process.exitCode=1;});

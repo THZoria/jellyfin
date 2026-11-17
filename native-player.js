@@ -38,7 +38,8 @@
     var exchange;
     if(deps.exchange){exchange=deps.exchange;io=deps.io;media=deps.media;}
     else{
-     if(!g.JellyfinNativeHttp||!g.JellyfinNativeHttp.available||!g.MoonlightStreamIO||!g.MoonlightStreamMedia||!g.MoonlightNativeTexture)throw Error("Composants du lecteur natif absents.");
+      if(!g.JellyfinNativeHttp||!g.JellyfinNativeHttp.available||!g.MoonlightStreamIO||!g.MoonlightNativeVideo)throw Error("Composants du lecteur natif absents.");
+      if(!g.CivNanoVGSession||!g.CivNanoVGSession.current)throw Error("Mets a jour CivHomebrew et redemarre Civilization VII : affichage natif partage requis.");
      var bridge=g.JellyfinNativeHttp.bridge();
      io=g.MoonlightStreamIO.create({resolveNativeSymbol:bridge.resolve},{batchReceive:false});
      exchange=g.JellyfinNativeHttp.create(bridge);
@@ -47,13 +48,14 @@
     var core={HEAPU8:heap,_malloc:function(){throw Error("Allocation CPU inattendue : lecteur GPU uniquement.");},_free:function(){throw Error("Liberation CPU inattendue.");},_ml_png_release:function(){}};
     if(!media){
      if(!g.JellyfinVodPacer)throw Error("Ordonnanceur VOD absent du paquet.");
-      media=g.MoonlightStreamMedia.create(io,core,{smoothVideo:false,videoPacer:g.JellyfinVodPacer.create({clock:clock,targetAt:targetAt,paused:function(){return paused||buffering;}}),presentationDue:function(timestamp){return !paused&&!buffering&&clock()>=targetAt(timestamp);},onImage:function(url){if(!cancel.cancelled&&o.onImage)o.onImage(url);},onStatus:status});
+      media=await g.MoonlightNativeVideo.createMedia(io,core,{mode:{codec:"h264",width:1280,height:720,fps:30},smoothVideo:false,videoPacer:g.JellyfinVodPacer.create({clock:clock,targetAt:targetAt,paused:function(){return paused||buffering;}}),canPresent:function(){return !cancel.cancelled&&!paused&&!buffering;},onPresented:function(){if(!cancel.cancelled&&o.onImage)o.onImage(null);},onStatus:status});
+      active();
     }
     var videoPointer=0x1000,spsPointer=0x110000,ppsPointer=0x120000,audioPointer=0x130000;
     var demux=g.JellyfinMatroska.create({cancel:cancel,onTracks:async function(t){
      active();if(tracks)throw Error("Changement de pistes en cours de lecture non pris en charge.");tracks=t;
      var fps=t.video.defaultDuration?Math.round(1000000000/t.video.defaultDuration):30;fps=Math.max(1,Math.min(60,fps));
-     status("Initialisation du decodeur materiel H.264 et de la texture GPU...");
+      status("Initialisation du decodeur materiel H.264 et de l'affichage partage...");
      media.videoSetup(1,t.video.width,t.video.height,fps);
      heap.set(t.video.avc.sps,spsPointer);heap.set(t.video.avc.pps,ppsPointer);
      if(t.audio)media.audioSetup(48000,2,1,1,960);
@@ -122,7 +124,7 @@
     if(media){
      var releaseDeadline=clock()+1000,released=false;
      for(var tries=0;tries<200;tries++){
-      try{media.close();released=true;break;}
+       try{await media.close();released=true;break;}
       catch(e){if(!/GPU transfer is still pending/.test(e.message)||clock()>=releaseDeadline){failed=e;break;}await sleep(5);}
      }
      if(!released){g.__jellyfinNativeQuarantine={media:media,io:io,heap:heap};failed=Error("Liberation GPU non confirmee : ressources conservees pour securite. Redemarre Civilization VII.");}

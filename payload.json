@@ -7,33 +7,21 @@
   "api": 1,
   "scripts": [
     "third-party-notices.js",
+    "vendor/moonlight/app/civapp-notices.js",
     "brand.js",
     "vendor/civhomebrew/native-ui-runtime.js",
     "vendor/civhomebrew/keyboard.js",
     "vendor/moonlight/app/src/streaming/native-io.js",
-    "vendor/moonlight/app/src/streaming/native-texture.js",
+    "vendor/moonlight/app/src/streaming/native-buffer.js",
+    "vendor/moonlight/app/vendor/moonlight-nx2-runtime.js",
+    "vendor/moonlight/app/src/streaming/native-context.js",
+    "vendor/moonlight/app/src/streaming/native-cleanup.js",
+    "vendor/moonlight/app/src/streaming/native-display.js",
     "vendor/moonlight-native-media-vod.js",
-    "http-stream.js",
-    "matroska.js",
-    "native-http.js",
-    "vod-pacer.js",
-    "native-player.js",
-    "player-layout.js",
-    "playback-options.js",
-    "app.js"
+    "vendor/moonlight/app/src/streaming/native-video.js",
+    "http-stream.js", "matroska.js", "native-http.js", "vod-pacer.js",
+    "native-player.js", "player-layout.js", "playback-options.js", "app.js"
   ],
   "icon": "icon.png",
-  "extensions": {
-    "updates": null,
-    "nativeUi": {
-      "api": 1,
-      "library": "civapps-native-ui",
-      "version": "1.3.6",
-      "minVersion": "1.3.5"
-    },
-    "execution": {
-      "schema": 1,
-      "scripts": "ordered"
-    }
-  }
+  "extensions": {"updates": null, "nativeUi": {"api": 1, "library": "civapps-native-ui", "version": "1.3.6", "minVersion": "1.3.5"}, "execution": {"schema": 1, "scripts": "ordered"}}
 }

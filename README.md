@@ -1,10 +1,19 @@
 # Jellyfin for CivHomebrew
 
-**Unofficial Switch 2 client · Version 0.0.1 · THZoria / SaoriYuki**
+**Unofficial Switch 2 client · Version 0.0.2 · THZoria / SaoriYuki**
 
 Browse your Jellyfin libraries and watch videos in fullscreen with controller support. Your server transcodes the media, while the console uses the native player to decode H.264 video and Opus audio.
 
 > This project requires an **already working CivHomebrew environment**. It is not available through the Nintendo eShop and does not include any game, system files, or instructions for setting up the console environment.
+
+### 0.0.2 compatibility update
+
+- Aligned with CivHomebrew revision `e6627ce1` and its **SDK 1.3.6** native UI runtime; requires a Launcher/core providing **SDK 1.3.5 or newer**. Update CivHomebrew through its normal component mechanism and fully restart Civilization VII before installing this client.
+- Declares native UI API 1 and ordered execution, mounts a shared native view, and releases it when returning to Launcher. Merely adding a manifest flag would not make the old client compatible.
+- Uses Moonlight's shared Vulkan/NV12 video path instead of the old Gameface texture path. The obsolete `GPU sync pointer range rejected` code is no longer invoked by Jellyfin; no memory validation is disabled and no firmware addresses are guessed.
+- Bundles the current native keyboard with exact confirmed-text replacement. Username/password characters are not trimmed or URL/form-encoded. Host tests cover a **20-character username**, a **16-character password**, `@ . * # %`, Unicode, and configured length limits (512/256).
+
+**Switch 2 firmware 20.1.1 still requires a device test.** These changes and the successful PC tests do not establish that playback or native keyboard entry works on that firmware. No console installation or firmware change is performed by the build.
 
 ## Features
 
@@ -65,7 +74,7 @@ Hardware acceleration can reduce server load. Enable it only if your hardware an
 
 ## 3. Build the application
 
-This repository includes the client sources and the **four required Moonlight source files**, preserved without modifications alongside their upstream notices. It does not include a prebuilt `.civapp` package. See the [XITRIX / Gezine credits and third-party notices](THIRD_PARTY.md).
+This repository includes the client sources, pinned CivHomebrew native UI/keyboard runtime and Moonlight media/display adapters, preserved alongside their upstream notices. It does not include a prebuilt `.civapp` package. See the [XITRIX / Gezine credits and third-party notices](THIRD_PARTY.md).
 
 ### PC requirements
 
@@ -141,6 +150,8 @@ Seeking or changing subtitles restarts the stream at the selected position and r
 
 | Problem | What to check |
 | --- | --- |
+| This app needs an update for the native Launcher | Install Jellyfin 0.0.2 or newer, not the old package. Update CivHomebrew if it reports an SDK requirement, then fully restart Civilization VII. |
+| GPU sync pointer range rejected | Replace the old Jellyfin package with 0.0.2; restart Civilization VII to release old native resources. If playback still fails on 20.1.1, retain the exact new error for device diagnostics. |
 | Server rejected or unreachable | Complete address, server IP instead of `localhost`, port 8096, network/VPN, and firewall. This client does not support HTTPS. |
 | Credentials rejected / 401 | Test the account in a browser and check the username and password. |
 | No playable source | Check the account's video and audio transcoding permissions and make sure the media is available. |
@@ -160,7 +171,7 @@ python tools/test.py
 
 Tests cover sign-in, consent and storage, cancellation, seeking, subtitle parameters, aspect ratio, HTTP transport, Matroska demuxing, buffering, and resource lifetime. Synthetic video fixtures are decoded by FFmpeg on the PC.
 
-**PC tests do not validate GPU rendering, audio, or real synchronization on the console.** Native playback and frame pacing were confirmed by the user during development. Later changes still require their own device tests.
+**PC tests do not validate GPU rendering, audio, or real synchronization on the console.** Native playback and frame pacing of the older implementation were confirmed by the user during development. The 0.0.2 shared-display migration requires new console tests, specifically on firmware 20.1.1.
 
 ### Project layout
 
@@ -176,14 +187,15 @@ playback-options.js    Playback positions and subtitle selection
 payload.json           Metadata and .civapp script order
 tools/                 Build, packaging, and dependency verification
 tests/                 Host tests and synthetic media fixtures
-vendor/moonlight/      Four unchanged XITRIX/Gezine sources and upstream notices
+vendor/moonlight/      Pinned XITRIX/Gezine media/display sources and notices
+vendor/civhomebrew/    Pinned SDK native UI runtime and native keyboard
 ```
 
 Prototypes, game probes, historical investigations, and full dependency checkouts are not included. Build outputs, caches, and local settings files are ignored by Git.
 
 ## Credits and project status
 
-Client developed by **THZoria / SaoriYuki**. Special thanks to **[XITRIX](https://github.com/XITRIX)** for Moonlight-CivSwitch and **[Gezine](https://github.com/Gezine)** for CivSwitch and the port's foundations. The native player builds on their work and that of upstream contributors. The four reused files retain their original source and attribution.
+Client developed by **THZoria / SaoriYuki**. Special thanks to **[XITRIX](https://github.com/XITRIX)** for Moonlight-CivSwitch and **[Gezine](https://github.com/Gezine)** for CivSwitch and the port's foundations. The native player builds on their work and that of upstream contributors. Reused files retain their original source and attribution.
 
 Logo: Jellyfin contributors, **CC BY-SA 4.0**, see [BRANDING.md](BRANDING.md). Notices and licensing scope: [THIRD_PARTY.md](THIRD_PARTY.md) and the [preserved upstream notices](vendor/moonlight/app/civapp-notices.js).
 

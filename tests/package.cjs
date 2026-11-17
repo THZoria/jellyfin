@@ -3,7 +3,13 @@ const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("n
 const root=path.join(__dirname,"..");
 const manifest=JSON.parse(fs.readFileSync(path.join(root,"payload.json"),"utf8"));
 const pkg=JSON.parse(fs.readFileSync(path.join(root,"dist/jellyfin-civswitch.civapp"),"utf8"));
-assert.equal(pkg.metadata.release,"0.0.1");assert.equal(pkg.metadata.author,"SaoriYuki");assert.equal(pkg.id,"jellyfin-civswitch");assert.ok(pkg.icon.startsWith("data:image/png;base64,"));
+assert.equal(pkg.metadata.release,"0.0.2");assert.equal(pkg.metadata.author,"SaoriYuki");assert.equal(pkg.id,"jellyfin-civswitch");assert.ok(pkg.icon.startsWith("data:image/png;base64,"));
+assert.equal(pkg.metadata.extensions.nativeUi.minVersion,"1.3.5");
+assert.equal(pkg.metadata.extensions.nativeUi.api,1);
+assert.equal(pkg.metadata.extensions.execution.scripts,"ordered");
+assert.ok(!pkg.scripts.some(s=>s.name.endsWith("native-texture.js")),"Obsolete Gameface texture/GPU-sync path is not packaged");
+assert.ok(pkg.scripts.some(s=>s.name.endsWith("native-video.js")));
+assert.ok(pkg.scripts.some(s=>s.name==="vendor/civhomebrew/keyboard.js"));
 assert.deepEqual(pkg.scripts.map(s=>s.name),manifest.scripts);
 for(const s of pkg.scripts){assert.equal(s.source,fs.readFileSync(path.join(root,s.name),"utf8").replace(/\r\n/g,"\n"));new vm.Script(s.source,{filename:s.name});}
 assert.equal(pkg.scripts.at(-1).name,"app.js");
@@ -13,4 +19,4 @@ assert.ok(pkg.scripts.some(s=>s.name==="vendor/moonlight-native-media-vod.js"));
 assert.ok(pkg.scripts.some(s=>s.name==="vod-pacer.js"));
 assert.ok(pkg.scripts.some(s=>s.name==="player-layout.js"));
 assert.ok(pkg.scripts.some(s=>s.name==="playback-options.js"));
-console.log("PASS: rebuilt 0.0.1 package, SaoriYuki, PNG icon, exact sources, fullscreen layout, VOD adapter and final lifetime entry.");
+console.log("PASS: rebuilt 0.0.2 package, native SDK metadata, shared video, keyboard, exact sources and final lifetime entry.");

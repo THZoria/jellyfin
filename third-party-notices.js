@@ -1,28 +1,21 @@
-/* Jellyfin logo: copyright Jellyfin contributors, Creative Commons
- * Attribution-ShareAlike 4.0 International. Rasterized from jellyfin/jellyfin-ux
- * branding/SVG/icon-transparent.svg; see BRANDING.md and tools/build_brand.py.
- * This client is unofficial and not endorsed by Jellyfin.
- */
-/* Native media components based on XITRIX/Moonlight-CivSwitch:
+/* Jellyfin logo: copyright Jellyfin contributors, CC BY-SA 4.0.
+ * See BRANDING.md and tools/build_brand.py. Unofficial client, not endorsed.
+ *
+ * Native media/display adapters: XITRIX/Moonlight-CivSwitch
  * https://github.com/XITRIX/Moonlight-CivSwitch
- * Commit: 64cdae7f4a3f19202c7f8eaa0e5ac12ce3330d72
- * app/src/streaming/native-io.js
- * app/src/streaming/native-texture.js
- * app/src/streaming/native-media.js
- * Authors/credits: XITRIX; Gezine/CivSwitch and upstream contributors.
- * native-io.js and native-texture.js are reused unchanged. Native media is a
- * generated derivative (vendor/moonlight-native-media-vod.js) with three VOD
- * timing hooks, produced by tools/build_media_adapter.py. Original native ABI,
- * allocation and release code remains unchanged; downloaded sources are intact.
- * Original headers and attribution are preserved.
- * The Sunshine/Moonlight C protocol runtime, Forge, ENet and TLS libraries are
- * NOT bundled here. No affiliation or endorsement is implied.
- * The upstream repository has no root project-wide LICENSE at this revision;
- * this notice does not grant additional redistribution rights. This integration
- * is a local experimental build; clarify licensing before public redistribution.
- * The four original source/test files and upstream app/civapp-notices.js are
- * preserved in vendor/moonlight/. The supplied upstream notice lists third-party
- * component licenses, not an explicit blanket license for the native adapters.
- * See THIRD_PARTY.md for provenance, licensing scope and credits to XITRIX and Gezine.
+ * Revision eccedd503aa111b56b0f062ee2dea414d295a8a2.
+ * Credits: XITRIX, Gezine/CivSwitch and upstream contributors.
+ * Sources are unchanged under vendor/moonlight/, except the generated
+ * native-media derivative with three VOD pacing hooks. Native ABI and safety
+ * validation are retained. Upstream notices are included in this package.
+ * moonlight-nx2-runtime.js includes its native display/decoder GPL notices.
+ * No Sunshine/Moonlight C protocol runtime, Forge or TLS library is loaded.
+ *
+ * Native UI/keyboard: XITRIX/CivHomebrew
+ * https://github.com/XITRIX/CivHomebrew
+ * Revision e6627ce1573950a54efc2fe59fe5ad93b2877bf3; SDK 1.3.6.
+ * Byte-exact SDK runtime and keyboard sources under vendor/civhomebrew/.
+ * Embedded GPL-3.0-or-later and dependency notices remain intact.
+ * See THIRD_PARTY.md for provenance and redistribution/licensing scope.
  */
-window.JellyfinNativeProvenance={repository:"https://github.com/XITRIX/Moonlight-CivSwitch",commit:"64cdae7f4a3f19202c7f8eaa0e5ac12ce3330d72"};
+window.JellyfinNativeProvenance={repository:"https://github.com/XITRIX/Moonlight-CivSwitch",commit:"eccedd503aa111b56b0f062ee2dea414d295a8a2",civhomebrewCommit:"e6627ce1573950a54efc2fe59fe5ad93b2877bf3",sdk:"1.3.6"};
