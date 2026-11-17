@@ -9,6 +9,7 @@
     "third-party-notices.js",
     "brand.js",
     "vendor/civhomebrew/native-ui-runtime.js",
+    "vendor/civhomebrew/keyboard.js",
     "vendor/moonlight/app/src/streaming/native-io.js",
     "vendor/moonlight/app/src/streaming/native-texture.js",
     "vendor/moonlight-native-media-vod.js",

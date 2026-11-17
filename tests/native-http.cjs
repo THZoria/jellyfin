@@ -88,6 +88,13 @@ async function run() {
     assert.equal(Number(/Content-Length: (\d+)/.exec(wire)[1]),Buffer.byteLength(body));
     assert.equal(Buffer.from(wire.split("\r\n\r\n")[1],"latin1").toString("utf8"),body);
     assert.equal(post.cleanup,1,"IPv4 skips DNS"); released(post);
+    for(const account of [{Username:"alic.z@jellyfin.test",Pw:"Ab@*#%123456789!"},{Username:"u".repeat(512),Pw:"p".repeat(256)},{Username:" user.name@example.com ",Pw:' @*#%é秘密"\\ ' }]){
+        const request=mock(response(200,"{}")),body=JSON.stringify(account);
+        await http.create(request.b)("http://192.168.1.10:8096/Users/AuthenticateByName","POST",{"Content-Type":"application/json"},body,options());
+        const wire=request.sent[0].wire,payload=wire.split("\r\n\r\n")[1];
+        assert.equal(Number(/Content-Length: (\d+)/.exec(wire)[1]),Buffer.byteLength(body));
+        assert.deepEqual(JSON.parse(Buffer.from(payload,"latin1").toString("utf8")),account,"Exact credentials, no form/URL escaping or truncation");released(request);
+    }
     const chunk=mock("HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n2\r\n{}\r\n0\r\n\r\n");
     assert.equal((await http.create(chunk.b)("http://127.0.0.1/","GET",{},null,options())).body,"{}"); released(chunk);
     const big=mock("HTTP/1.1 200 OK\r\nContent-Length: 2097153\r\n\r\n");

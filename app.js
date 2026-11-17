@@ -330,7 +330,7 @@
         view="login";stack=[];page=null;clearContent();title.textContent="Se connecter";
         message(serverName+"  ·  "+server);
         button("Utilisateur  ·  "+(username||"Nom du compte"),async function(){
-            var v=await edit("Utilisateur",username,false);if(v!==null&&!closed){username=v.trim();showLogin();}
+            var v=await edit("Utilisateur",username,false);if(v!==null&&!closed){username=v;showLogin();}
         });
         button("Mot de passe  ·  "+(password?"••••••••":""),async function(){
             var v=await edit("Mot de passe","",true);if(v!==null&&!closed){password=v;showLogin();}
