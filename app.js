@@ -1,11 +1,11 @@
-/* Jellyfin 0.0.2 by SaoriYuki. Credentials persist only with explicit consent. */
+/* Jellyfin 0.0.3 by SaoriYuki. Credentials persist only with explicit consent. */
 (async function () {
     "use strict";
     var previous = window.__civswitchApp;
     if (previous && typeof previous.close === "function") await previous.close();
     var id = "jellyfin-civswitch", closed = false, busy = false, editing = false;
     var nativeView=null;
-    var font = window.CivNanoVGSession ? "CivNanoVG, sans-serif" : "BodyFont, BodyFont-JP, BodyFont-KR, BodyFont-SC, BodyFont-TC, Arial, sans-serif";
+    var font = "BodyFont, BodyFont-JP, BodyFont-KR, BodyFont-SC, BodyFont-TC, Arial, sans-serif";
     var server = "", accepted = false, serverName = "", username = "", password = "", token = "", userId = "";
     var settingsPath = "save:/civhomebrew/jellyfin-settings.json", storage = null, storageTask = null, browserEditor = null;
     var rememberCredentials=false, savedCredentials=null;
@@ -32,19 +32,19 @@
     }
     var root = node("div", document.body, {position:"fixed",left:"0",right:"0",top:"0",bottom:"0",backgroundColor:"#090d18",backgroundImage:"linear-gradient(125deg,#19132d,#090d18 65%,#082535)",color:"#fff",zIndex:"2",padding:"32px 64px",boxSizing:"border-box",display:"flex",flexDirection:"column",outline:"none"});
     root.id = id; root.tabIndex = -1;
-    if(window.CivHomebrewSDK){
-        root.setAttribute("data-civ-native-ui","1");
-        try{nativeView=await window.CivHomebrewSDK.app.mount(root);}
+    if(window.JellyfinRuntime){
+        try{nativeView=await window.JellyfinRuntime.mount(root);}
         catch(error){if(root.parentNode)root.parentNode.removeChild(root);throw error;}
         if(nativeView&&nativeView.blocked){
             var blocker={lifetime:nativeView.lifetime,close:async function(){await nativeView.close();if(root.parentNode)root.parentNode.removeChild(root);if(window.__civswitchApp===blocker)delete window.__civswitchApp;}};
             window.__civswitchApp=blocker;await blocker.lifetime;await blocker.close();return;
         }
     }
+    if(nativeView){font="CivNanoVG, sans-serif";root.style.fontFamily=font;}
     var heading = node("div", root, {display:"flex",alignItems:"center",height:"64px",marginBottom:"20px"});
     node("img",heading,{width:"48px",height:"48px",marginRight:"16px"}).src=window.JellyfinBrand.icon;
     node("span",heading,{fontSize:"34px",color:"#fff"},"Jellyfin");
-    node("span",heading,{fontSize:"16px",color:"#8796ae",marginLeft:"24px"},"0.0.2  /  SaoriYuki");
+    node("span",heading,{fontSize:"16px",color:"#8796ae",marginLeft:"24px"},"0.0.3  /  SaoriYuki");
     var title = node("div", root, {fontSize:"32px",marginBottom:"12px"});
     var status = node("div", root, {fontSize:"18px",minHeight:"44px",whiteSpace:"pre-wrap",color:"#a4b3ca"});
     status.setAttribute("role", "status");
@@ -209,7 +209,7 @@
         return Object.keys(values).filter(function (k) { return values[k] !== undefined; }).map(function (k) { return encodeURIComponent(k) + "=" + encodeURIComponent(values[k]); }).join("&");
     }
     function authorization(includeToken) {
-        var value = 'MediaBrowser Client="Jellyfin CivSwitch", Device="CivSwitch", DeviceId="' + deviceId + '", Version="0.0.2"';
+        var value = 'MediaBrowser Client="Jellyfin CivSwitch", Device="CivSwitch", DeviceId="' + deviceId + '", Version="0.0.3"';
         if (includeToken && token) value += ', Token="' + token + '"';
         return value;
     }

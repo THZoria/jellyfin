@@ -43,16 +43,18 @@ async function run(shared=false){
    const q=new URL(o.url).searchParams;assert.equal(q.get("VideoCodec"),"h264");assert.equal(q.get("AudioCodec"),"opus");assert.equal(q.get("Profile"),"baseline");assert.equal(q.get("AllowVideoStreamCopy"),"false");
    let resolve,paused=false;const finished=new Promise(r=>{resolve=r;});
     const p={options:o,released:false,finished,stats:()=>({seconds:12,paused}),togglePause:()=>{paused=!paused;return paused;},stop:async()=>{await tick();p.released=true;resolve({ok:true});return finished;}};
-   players.push(p);queueMicrotask(()=>{o.onFormat({width:1280,height:720,displayWidth:1280,displayHeight:720});o.onImage("live:/moonlight-experiment/test");});return p;
+    players.push(p);queueMicrotask(()=>{o.onFormat({width:1280,height:720,displayWidth:1280,displayHeight:720});o.onImage(shared?null:"live:/moonlight-experiment/test");});return p;
   }}
  };
-   if(shared){context.CivNanoVGSession={};context.CivHomebrewSDK={app:{mount:async root=>{nativeMounts++;assert.equal(root.attrs["data-civ-native-ui"],"1");return {update(){},async close(){await tick();nativeCloses++;}};}}};}
-   context.window=context;for(const file of ["brand.js","player-layout.js","playback-options.js"])vm.runInNewContext(fs.readFileSync(path.join(__dirname,"..",file),"utf8"),context);const lifetime=vm.runInNewContext(source,context);await tick();
+   context.CivNanoVGSession={current:shared?{renderer:{owner:{}}}:null};
+   context.CivHomebrewSDK={app:{mount:async root=>{assert.ok(shared,"Classic UI must not mount the bundled SDK");nativeMounts++;assert.equal(root.attrs["data-civ-native-ui"],"1");return {update(){},async close(){await tick();nativeCloses++;}};}}};
+   context.window=context;for(const file of ["runtime-mode.js","brand.js","player-layout.js","playback-options.js"])vm.runInNewContext(fs.readFileSync(path.join(__dirname,"..",file),"utf8"),context);const lifetime=vm.runInNewContext(source,context);await tick();
  const text=()=>all(body).map(n=>n.textContent).join("\n"),buttons=()=>all(body).filter(n=>n.tag==="button");
  async function key(key){offset+=200;events.keydown({key,repeat:false,preventDefault(){},stopImmediatePropagation(){}});await tick();}
  async function native(name,phase=0){offset+=200;nativeAction(name,phase,0,0);await tick();}
  async function click(prefix){const n=buttons().find(n=>n.attrs["aria-label"].startsWith(prefix));assert.ok(n,"Button: "+prefix);for(let i=0;n.style.display==="none"&&i<buttons().length;i++)await key("ArrowDown");assert.notEqual(n.style.display,"none");n.events.click();await tick();}
-   assert.match(text(),/0.0.2.*SaoriYuki/);
+   assert.match(text(),/0\.0\.3.*SaoriYuki/);
+   assert.equal(body.children[0].attrs["data-civ-native-ui"],shared?"1":undefined);
  assert.ok(!text().includes("Sonde ExeFS")&&!text().includes("Test WebM"),"Old diagnostic branches removed from UI");
   assert.ok(!buttons().some(n=>n.attrs["aria-label"].startsWith("Utilisateur")),"Login gated before server acceptance");
   assert.equal(requests.length,0,"No default server contacted");
@@ -70,7 +72,9 @@ async function run(shared=false){
   await click("Series");assert.match(text(),/Page 1 \/ 3/);await key("ArrowRight");assert.match(text(),/Page 2 \/ 3/);await click("Page suivante");assert.match(text(),/Page 3 \/ 3/);
  assert.ok(!buttons().some(n=>n.attrs["aria-label"].startsWith("Page suivante")));await key("ArrowLeft");await key("ArrowLeft");
  for(let i=0;i<12;i++)await key("ArrowDown");const selected=buttons().find(n=>n.attrs["data-selected"]==="true");assert.equal(selected.attrs["aria-label"],"Anime 12");assert.notEqual(selected.style.display,"none");
-  await key("Enter");await click("Lire");assert.equal(players.length,1);assert.ok(all(body).some(n=>n.tag==="img"&&n.src==="live:/moonlight-experiment/test"));assert.ok(!text().includes("TEST-TOKEN"));
+   await key("Enter");await click("Lire");assert.equal(players.length,1);
+   assert.equal(all(body).some(n=>n.tag==="img"&&n.src==="live:/moonlight-experiment/test"),!shared,"Only classic rendering publishes a Gameface texture URL");
+   assert.ok(!text().includes("TEST-TOKEN"));
  const overlay=all(body).find(n=>n.id==="jellyfin-fullscreen-player"),image=overlay.children.find(n=>n.tag==="img");
   assert.equal(overlay.style.position,"fixed");assert.equal(overlay.style.left,"0");assert.equal(overlay.style.right,"0");assert.equal(overlay.style.top,"0");assert.equal(overlay.style.bottom,"0");
   if(shared){assert.equal(overlay.style.backgroundColor,"transparent");assert.equal(body.children[0].style.backgroundColor,"transparent");assert.equal(body.children[0].style.backgroundImage,"none");}
@@ -128,6 +132,7 @@ async function run(shared=false){
   pending=true;const third=vm.runInNewContext(source,context);await tick();await context.__civswitchApp.close();await third;assert.ok(cancelled,"Saved server revalidation cancelled cleanly on close");
   pending=false;saved="{corrupt";const before=requests.length,fourth=vm.runInNewContext(source,context);await tick();assert.equal(requests.length,before);assert.ok(text().includes("Ajouter une adresse"));assert.ok(!text().includes("Nom du compte"));await context.__civswitchApp.close();await fourth;
    if(shared)assert.equal(nativeMounts,nativeCloses,"Every shared view lease closes before app lifetime resolves");
+   else assert.equal(nativeMounts,0,"No native view is created in classic mode");
    console.log("PASS: server/login persistence, fullscreen A/B, coalesced forward/back seek, ASS/PGS selection/off, absolute position reports, pause preservation, stale callback rejection, cancellation and teardown (host mocks, shared="+shared+").");
 }
 run().then(()=>run(true)).catch(e=>{console.error(e);process.exitCode=1;});

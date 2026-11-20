@@ -15,7 +15,7 @@ def transformed():
     changes = (
         ("if(!ready)return false;\n   var frame=pending", "if(!ready)return false;\n   if(publish!==false&&options.canPublish&&!options.canPublish(pending))return false;\n   var frame=pending"),
         ("if(fps===60&&options.smoothVideo!==false)videoPacer=createVideoPacer(now,1000/fps);", "if(options.videoPacer)videoPacer=options.videoPacer;else if(fps===60&&options.smoothVideo!==false)videoPacer=createVideoPacer(now,1000/fps);"),
-        ("if(options.videoSink&&fps>=60&&options.smoothVideo!==false)videoPacer=createVideoPacer(now,1000/60,true);", "if(options.videoSink&&options.videoPacer)videoPacer=options.videoPacer;else if(options.videoSink&&fps>=60&&options.smoothVideo!==false)videoPacer=createVideoPacer(now,1000/60,true);"),
+        ("if(options.videoSink&&fps>=60&&options.smoothVideo!==false)videoPacer=createVideoPacer(now,1000/60,true);", "if(options.videoPacer)videoPacer=options.videoPacer;else if(options.videoSink&&fps>=60&&options.smoothVideo!==false)videoPacer=createVideoPacer(now,1000/60,true);"),
     )
     for original, replacement in changes:
         if text.count(original) != 1:

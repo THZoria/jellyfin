@@ -1,10 +1,10 @@
 # Jellyfin for CivHomebrew
 
-**Unofficial Switch 2 client · Version 0.0.2 · THZoria / SaoriYuki**
+**Unofficial Switch 2 client · Version 0.0.3 · THZoria / SaoriYuki**
 
 Browse your Jellyfin libraries and watch videos in fullscreen with controller support. Your server transcodes the media, while the console uses the native player to decode H.264 video and Opus audio.
 
-> This project requires an **already working CivHomebrew environment with SDK 1.3.5 or newer**. It is not available through the Nintendo eShop and does not include any game, system files, or instructions for setting up the console environment.
+> This project requires an **already working CivHomebrew environment**. Both the classic Gameface Launcher and the native Launcher are supported by the same package. **SDK 1.3.5 or newer is required only for the native Launcher.** It is not available through the Nintendo eShop and does not include any game, system files, or instructions for setting up the console environment.
 
 **Switch 2 firmware 20.1.1 still requires a device test.** These changes and the successful PC tests do not establish that playback or native keyboard entry works on that firmware. No console installation or firmware change is performed by the build.
 
@@ -16,6 +16,7 @@ Browse your Jellyfin libraries and watch videos in fullscreen with controller su
 - Fullscreen playback with the correct aspect ratio, pause, and 10-second seeking.
 - Subtitle selection, with subtitles burned into the video by Jellyfin.
 - Up to 20 seconds of forward buffering, bounded memory use, and automatic rebuffering.
+- Automatic selection of classic Gameface or shared native Vulkan rendering, without changing packages.
 
 ## 1. Set up your Jellyfin server
 
@@ -93,7 +94,12 @@ No neighboring repository, dependency download, full Moonlight checkout, C compi
 
 ## 4. Install in CivHomebrew
 
-**Minimum requirement: CivHomebrew with SDK 1.3.5 or newer.** If necessary, update CivHomebrew through its normal component mechanism, then fully restart Civilization VII before installing and launching Jellyfin.
+Use the same package with either Launcher:
+
+- **Classic CivHomebrew:** uses the existing Gameface interface and native video texture. A resident native UI SDK is not required.
+- **Native CivHomebrew:** requires **SDK 1.3.5 or newer** and reuses the Launcher's shared Vulkan display. If necessary, update CivHomebrew through its normal component mechanism, then fully restart Civilization VII.
+
+Detection is automatic. A failed native display is reported rather than silently opening a competing renderer. Existing server settings and optionally saved credentials are preserved.
 
 1. Open CivHomebrew on the console and enable its FTP server.
 2. From an FTP client on your PC, connect to the address shown by CivHomebrew. The default port is **5000**.
@@ -145,8 +151,8 @@ Seeking or changing subtitles restarts the stream at the selected position and r
 
 | Problem | What to check |
 | --- | --- |
-| This app needs an update for the native Launcher | Install Jellyfin 0.0.2 or newer, not the old package. Update CivHomebrew if it reports an SDK requirement, then fully restart Civilization VII. |
-| GPU sync pointer range rejected | Replace the old Jellyfin package with 0.0.2; restart Civilization VII to release old native resources. If playback still fails on 20.1.1, retain the exact new error for device diagnostics. |
+| This app needs an update for the native Launcher | Install the current Jellyfin package. Native Launcher requires SDK 1.3.5 or newer; classic Launcher does not. After a CivHomebrew update, fully restart Civilization VII. |
+| GPU sync pointer range rejected | Install Jellyfin 0.0.3 and restart Civilization VII to release old native resources. Classic mode uses synchronous video transfers without the old GPU sync pointer lookup; native mode uses the shared Vulkan display. If playback still fails on 20.1.1, retain the exact new error for device diagnostics. |
 | Server rejected or unreachable | Complete address, server IP instead of `localhost`, port 8096, network/VPN, and firewall. This client does not support HTTPS. |
 | Credentials rejected / 401 | Test the account in a browser and check the username and password. |
 | No playable source | Check the account's video and audio transcoding permissions and make sure the media is available. |
@@ -164,14 +170,15 @@ After building:
 python tools/test.py
 ```
 
-Tests cover sign-in, consent and storage, cancellation, seeking, subtitle parameters, aspect ratio, HTTP transport, Matroska demuxing, buffering, and resource lifetime. Synthetic video fixtures are decoded by FFmpeg on the PC.
+Tests cover classic/native mode detection, sign-in, consent and storage, cancellation, seeking, subtitle parameters, aspect ratio, HTTP transport, Matroska demuxing, buffering, and resource lifetime. Synthetic video fixtures are decoded by FFmpeg on the PC.
 
-**PC tests do not validate GPU rendering, audio, or real synchronization on the console.** Native playback and frame pacing of the older implementation were confirmed by the user during development. The 0.0.2 shared-display migration requires new console tests, specifically on firmware 20.1.1.
+**PC tests do not validate GPU rendering, audio, or real synchronization on the console.** Native playback and frame pacing of the older implementation were confirmed by the user during development. Version 0.0.3 requires new console tests on both classic and native Launchers, specifically on firmware 20.1.1. Classic mode retains the guarded Civ VII 1.0.0 texture ABI and may have different frame pacing because its transfers are synchronous.
 
 ### Project layout
 
 ```text
 app.js                 UI, sign-in, libraries, and playback sessions
+runtime-mode.js        Classic/shared-native display detection and view mounting
 native-http.js         Native HTTP API requests and streaming
 http-stream.js         Incremental HTTP framing
 matroska.js            H.264 / Opus demuxing

@@ -28,6 +28,11 @@ async function run(){
  }
  const cancelled=keyboard.edit("saved secret",256,true,"Password");await new Promise(r=>setImmediate(r));keyboard.cancel();assert.equal(await cancelled,null);
  assert.equal(subscriptions.length,0);assert.equal(overlays,4);assert.equal(releases,4);
- console.log("PASS: current native keyboard preserves 20/16-character credentials and special/Unicode characters; cancellation releases callbacks and overlay.");
+ g.CivNanoVGSession.current=null;
+ const classic=keyboard.edit("",256,true,"Password");await new Promise(r=>setImmediate(r));
+ for(const s of subscriptions.slice())if(s.name==="IMEValidated")s.fn.call(s.owner,{data:"Ab@*#%123456789!"});
+ assert.equal(await classic,"Ab@*#%123456789!");assert.equal(overlays,4,"Classic keyboard must not acquire a native display overlay");
+ assert.equal(subscriptions.length,0);assert.equal(root.children.length,0);
+ console.log("PASS: classic/native keyboard preserves 20/16-character credentials and special/Unicode characters; cancellation releases callbacks and overlay.");
 }
 run().catch(e=>{console.error(e);process.exitCode=1;});

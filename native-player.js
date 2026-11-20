@@ -35,11 +35,10 @@
    await Promise.resolve(); // Return the controller before invoking any UI callbacks.
    try{
     if(g.__jellyfinNativeQuarantine)throw Error("Un lecteur natif precedent n'a pas pu etre libere. Redemarre Civilization VII.");
-    var exchange;
+    var exchange,shared=!!(g.JellyfinRuntime&&g.JellyfinRuntime.sharedSession());
     if(deps.exchange){exchange=deps.exchange;io=deps.io;media=deps.media;}
     else{
-      if(!g.JellyfinNativeHttp||!g.JellyfinNativeHttp.available||!g.MoonlightStreamIO||!g.MoonlightNativeVideo)throw Error("Composants du lecteur natif absents.");
-      if(!g.CivNanoVGSession||!g.CivNanoVGSession.current)throw Error("Mets a jour CivHomebrew et redemarre Civilization VII : affichage natif partage requis.");
+      if(!g.JellyfinNativeHttp||!g.JellyfinNativeHttp.available||!g.MoonlightStreamIO)throw Error("Composants du lecteur natif absents.");
      var bridge=g.JellyfinNativeHttp.bridge();
      io=g.MoonlightStreamIO.create({resolveNativeSymbol:bridge.resolve},{batchReceive:false});
      exchange=g.JellyfinNativeHttp.create(bridge);
@@ -48,14 +47,27 @@
     var core={HEAPU8:heap,_malloc:function(){throw Error("Allocation CPU inattendue : lecteur GPU uniquement.");},_free:function(){throw Error("Liberation CPU inattendue.");},_ml_png_release:function(){}};
     if(!media){
      if(!g.JellyfinVodPacer)throw Error("Ordonnanceur VOD absent du paquet.");
-      media=await g.MoonlightNativeVideo.createMedia(io,core,{mode:{codec:"h264",width:1280,height:720,fps:30},smoothVideo:false,videoPacer:g.JellyfinVodPacer.create({clock:clock,targetAt:targetAt,paused:function(){return paused||buffering;}}),canPresent:function(){return !cancel.cancelled&&!paused&&!buffering;},onPresented:function(){if(!cancel.cancelled&&o.onImage)o.onImage(null);},onStatus:status});
+      var mediaOptions={smoothVideo:false,videoPacer:g.JellyfinVodPacer.create({clock:clock,targetAt:targetAt,paused:function(){return paused||buffering;}}),canPresent:function(){return !cancel.cancelled&&!paused&&!buffering;},onStatus:status};
+      if(shared){
+       if(!g.MoonlightNativeVideo)throw Error("Affichage partage absent du paquet.");
+       mediaOptions.mode={codec:"h264",width:1280,height:720,fps:30};
+       mediaOptions.onPresented=function(){if(!cancel.cancelled&&o.onImage)o.onImage(null);};
+       media=await g.MoonlightNativeVideo.createMedia(io,core,mediaOptions);
+      }else{
+       if(!g.MoonlightStreamMedia||!g.MoonlightNativeTexture)throw Error("Lecteur Gameface absent du paquet.");
+       // GetOutputBuffer completes the transfer synchronously when no NvnSync
+       // is supplied. Avoid the old firmware-dependent GPU sync pointer lookup.
+       mediaOptions.synchronousGpu=true;
+       mediaOptions.onImage=function(url){if(!cancel.cancelled&&o.onImage)o.onImage(url);};
+       media=g.MoonlightStreamMedia.create(io,core,mediaOptions);
+      }
       active();
     }
     var videoPointer=0x1000,spsPointer=0x110000,ppsPointer=0x120000,audioPointer=0x130000;
     var demux=g.JellyfinMatroska.create({cancel:cancel,onTracks:async function(t){
      active();if(tracks)throw Error("Changement de pistes en cours de lecture non pris en charge.");tracks=t;
      var fps=t.video.defaultDuration?Math.round(1000000000/t.video.defaultDuration):30;fps=Math.max(1,Math.min(60,fps));
-      status("Initialisation du decodeur materiel H.264 et de l'affichage partage...");
+      status("Initialisation du decodeur materiel H.264 ("+(shared?"affichage partage":"Gameface")+")...");
      media.videoSetup(1,t.video.width,t.video.height,fps);
      heap.set(t.video.avc.sps,spsPointer);heap.set(t.video.avc.pps,ppsPointer);
      if(t.audio)media.audioSetup(48000,2,1,1,960);

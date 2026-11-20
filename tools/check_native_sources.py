@@ -3,13 +3,13 @@ import hashlib
 import json
 from pathlib import Path
 from build_media_adapter import transformed, OUTPUT
-from dependencies import BASE, FILES, CIVHOMEBREW_FILES
+from dependencies import BASE, FILES, CIVHOMEBREW_FILES, LEGACY_TEXTURE_SHA256
 
 ROOT = Path(__file__).resolve().parents[1]
 
 def main():
     manifest = json.loads((ROOT / "payload.json").read_text(encoding="utf8"))
-    for name in ("native-io.js", "native-display.js", "native-video.js"):
+    for name in ("native-io.js", "native-texture.js", "native-display.js", "native-video.js"):
         relative = "vendor/moonlight/app/src/streaming/" + name
         if relative not in manifest["scripts"]:
             raise SystemExit("Native adapter missing from manifest: " + relative)
@@ -18,6 +18,8 @@ def main():
     for relative, expected in FILES.items():
         if hashlib.sha256((BASE / relative).read_bytes()).hexdigest() != expected:
             raise SystemExit("Dependency changed: " + relative)
+    if hashlib.sha256((BASE / "app/src/streaming/native-texture.js").read_bytes()).hexdigest() != LEGACY_TEXTURE_SHA256:
+        raise SystemExit("Legacy texture dependency changed")
     for relative, expected in CIVHOMEBREW_FILES.items():
         if hashlib.sha256((ROOT / "vendor/civhomebrew" / relative).read_bytes()).hexdigest() != expected:
             raise SystemExit("CivHomebrew dependency changed: " + relative)
